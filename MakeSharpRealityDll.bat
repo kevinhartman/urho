@@ -19,7 +19,10 @@ if "%VSVER%" == "2015" set "VS_VER=14"
 if "%VSVER%" == "2017" set "VS_VER=15"
 if "%PLATFORM%" == "x64" (set "TARGET=Visual Studio %VS_VER% Win64") else (set "TARGET=Visual Studio %VS_VER%")
 
-cd Urho3D\Urho3D_SharpReality
+cd Urho3D
+:: xcopy Urho3D_UWP\MonoUrho.UWP\SdlStub\SDL Urho3D_SharpReality\include\Urho3D\ThirdParty\SDL\* /Y
+cd Urho3D_SharpReality
+cmake --build . --target Urho3D --config %CONFIG%
 copy lib\Urho3D%LIB_PREFIX%.lib lib\Urho3D%LIB_PREFIX%_%PLATFORM%.lib /Y
 cd ../..
 
