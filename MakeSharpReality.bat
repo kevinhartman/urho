@@ -34,4 +34,4 @@ cmake --build . --target Urho3D --config %CONFIG%
 copy lib\Urho3D%LIB_PREFIX%.lib lib\Urho3D%LIB_PREFIX%_%PLATFORM%.lib /Y
 cd ../..
 
-:: msbuild Urho3D\Urho3D_SharpReality\UrhoSharp.SharpReality\UrhoSharp.SharpReality.vcxproj /p:Configuration=%CONFIG% /p:Platform=%PLATFORM%
+msbuild Urho3D\Urho3D_SharpReality\UrhoSharp.SharpReality\UrhoSharp.SharpReality.vcxproj /p:Configuration=%CONFIG% /p:Platform=%PLATFORM%

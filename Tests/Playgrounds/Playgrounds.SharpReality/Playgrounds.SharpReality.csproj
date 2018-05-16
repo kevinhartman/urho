@@ -42,7 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="..\..\..\Bin\SharpReality\x64\UrhoSharp.SharpReality\mono-holourho.dll">
+    <Content Include="..\..\..\Bin\SharpReality\$(Platform)\UrhoSharp.SharpReality\mono-holourho.dll">
       <Link>mono-holourho.dll</Link>
     </Content>
     <Content Include="..\..\..\Urho3D\CoreData.pak">
