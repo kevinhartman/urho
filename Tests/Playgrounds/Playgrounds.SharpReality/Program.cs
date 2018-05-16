@@ -1,12 +1,14 @@
 ﻿using System;
-using Windows.ApplicationModel.Core;
 using Urho;
+using Windows.ApplicationModel.Core;
 
 namespace Playgrounds.SharpReality
 {
-	internal class Program
+    internal class Program
 	{
 		[MTAThread]
-		private static void Main() => CoreApplication.Run(new UrhoAppViewSource<PerformanceTests>());
-	}
+		private static void Main() => CoreApplication.Run(
+            new UrhoAppViewSource<PerformanceTests>(
+                new ApplicationOptions("Data")));
+    }
 }

@@ -48,6 +48,7 @@
     <Content Include="..\..\..\Urho3D\CoreData.pak">
       <Link>CoreData.pak</Link>
     </Content>
+    <Content Include="Data\Models\Sphere.mdl" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +63,8 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Textures\Earth.jpg" />
+    <Content Include="Data\Textures\Moon.jpg" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>

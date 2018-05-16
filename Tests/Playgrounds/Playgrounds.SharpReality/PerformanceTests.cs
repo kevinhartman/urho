@@ -1,13 +1,11 @@
 ﻿using Urho;
-using Urho.SharpReality;
-using Urho.Resources;
-using System.Collections.Generic;
-using System;
+using Urho.Actions;
 using Urho.Shapes;
+using Urho.SharpReality;
 
 namespace Playgrounds.SharpReality
 {
-	public class PerformanceTests : StereoApplication
+    public class PerformanceTests : StereoApplication
 	{
 		private DebugHud hud;
 
@@ -15,36 +13,43 @@ namespace Playgrounds.SharpReality
 		{
 		}
 
-		protected override async void Start()
+		protected override void Start()
 		{
 			base.Start();
-			for (int i = 0; i < 5; i++)
+
+            const int size = 15;
+            const float scale = 0.05f;
+            const float distance = 0.12f;
+            for (int i = 0; i < size; i++)
 			{
-				for (int j = 0; j < 5; j++)
+				for (int j = 0; j < size; j++)
 				{
-					for (int k = 0; k < 5; k++)
+					for (int k = 0; k < size; k++)
 					{
 						var child = Scene.CreateChild();
-						child.SetScale(0.05f);
+						child.SetScale(scale);
 						var sphere = child.CreateComponent<Box>();
-						//sphere.Model = ResourceCache.GetModel("Sphere.mdl");
+						sphere.Model = ResourceCache.GetModel("Models/Sphere.mdl");
+                        sphere.SetMaterial(Material.FromImage("Textures/Earth.jpg"));
 
-						var mat = Material.FromColor(Randoms.NextColor());
-						sphere.SetMaterial(mat);
-						child.Position = new Vector3(i * 0.12f, j * 0.12f, 1 + k * 0.12f);
-					}
+                        child.Position = new Vector3(
+                            i * distance, j * distance, 1 + k * distance);
+
+                        child.RunActions(new RepeatForever(
+                            new RotateBy(
+                                duration: 1f,
+                                deltaAngleX: 0,
+                                deltaAngleY: -5,
+                                deltaAngleZ: 0)));
+                    }
 				}
 			}
+
 			Time.FrameEnded += Time_FrameEnded;
 			new MonoDebugHud(this) {FpsOnly = true}.Show(Color.Green, 72);
 
 			hud = Engine.CreateDebugHud();
 			hud.ToggleAll();
-
-			/*await RegisterCortanaCommands(new Dictionary<string, Action>
-				{
-					{"hey!", () => { }}
-				});*/
 		}
 
 		private void Time_FrameEnded(FrameEndedEventArgs obj)
@@ -57,8 +62,6 @@ namespace Playgrounds.SharpReality
 
 		protected override void OnUpdate(float timeStep)
 		{
-
-
 			base.OnUpdate(timeStep);
 		}
 	}

@@ -6,7 +6,7 @@ using Urho.SharpReality;
 
 namespace Playgrounds.SharpReality
 {
-	public class SpatialMappingTests : StereoApplication
+    public class SpatialMappingTests : StereoApplication
 	{
 		bool wireframe;
 		bool mappingEnded;
@@ -34,12 +34,15 @@ namespace Playgrounds.SharpReality
 			spatMaterial.SetShaderParameter("MatDiffColor", Color.Cyan);
 
 			// make sure 'spatialMapping' capabilaty is enabled in the app manifest.
-			var cortanaAllowed = await RegisterCortanaCommands(new Dictionary<string, Action> {
+			var cortanaAllowed = await RegisterCortanaCommands(
+                new Dictionary<string, Action>
+                {
 					{ "show results" , ShowResults }
 				});
-			var spatialMappingAllowed = await StartSpatialMapping(new Vector3(50, 50, 50), color: Color.Yellow);
-		}
 
+			var spatialMappingAllowed = await StartSpatialMapping(
+                new Vector3(50, 50, 50), color: Color.Yellow);
+		}
 
 		async void ShowResults()
 		{
