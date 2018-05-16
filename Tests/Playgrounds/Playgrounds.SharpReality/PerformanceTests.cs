@@ -35,12 +35,12 @@ namespace Playgrounds.SharpReality
                         child.Position = new Vector3(
                             i * distance, j * distance, 1 + k * distance);
 
-                        child.RunActions(new RepeatForever(
-                            new RotateBy(
-                                duration: 1f,
-                                deltaAngleX: 0,
-                                deltaAngleY: -5,
-                                deltaAngleZ: 0)));
+                        //child.RunActions(new RepeatForever(
+                        //    new RotateBy(
+                        //        duration: 1f,
+                        //        deltaAngleX: 0,
+                        //        deltaAngleY: -5,
+                        //        deltaAngleZ: 0)));
                     }
 				}
 			}
