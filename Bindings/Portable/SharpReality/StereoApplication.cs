@@ -135,7 +135,8 @@ namespace Urho.SharpReality
 			Renderer.SetViewport(0, leftViewport);
 			Renderer.SetViewport(1, rightVp);
 
-			CullingCamera = leftCameraNode.CreateComponent<Camera>();
+			var cullingCameraNode = Scene.CreateChild();
+			CullingCamera = cullingCameraNode.CreateComponent<Camera>();
 			rightVp.CullCamera = CullingCamera;
 			leftViewport.CullCamera = CullingCamera;
 			rightVp.SetStereoMode(true);
@@ -157,7 +158,7 @@ namespace Urho.SharpReality
 			leftCameraNode.Translate(new Vector3(-0.032f, 0, 0));
 			rightCameraNode.Translate(new Vector3(0.032f, 0, 0));
 #endif
-		}
+        }
 
 		internal void UpdateStereoView(Matrix4 leftView, Matrix4 rightView, Matrix4 leftProj, Matrix4 rightProj)
 		{
