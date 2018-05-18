@@ -1,0 +1,1 @@
+call PackageTool.exe Urho3D\CoreData\ CoreData.pak
