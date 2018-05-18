@@ -1,1 +1,1 @@
-call PackageTool.exe Urho3D\CoreData\ CoreData.pak
+call PackageTool.exe Urho3D\CoreData\ Urho3D\CoreData.pak
