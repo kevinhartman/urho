@@ -25,6 +25,9 @@ uniform float4x3 cModel;
 uniform float4x3 cView;
 uniform float4x3 cViewInv;
 uniform float4x4 cViewProj;
+#ifdef SINGLE_PASS_INSTANCED
+uniform float4x4 cViewProj2;
+#endif
 uniform float4 cUOffset;
 uniform float4 cVOffset;
 uniform float4x3 cZone;
@@ -102,6 +105,9 @@ cbuffer CameraVS : register(b1)
     float4x3 cView;
     float4x3 cViewInv;
     float4x4 cViewProj;
+#ifdef SINGLE_PASS_INSTANCED
+	float4x4 cViewProj2;
+#endif
     float4 cClipPlane;
 }
 

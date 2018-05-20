@@ -26,6 +26,13 @@ float4 GetClipPos(float3 worldPos)
     return mul(float4(worldPos, 1.0), cViewProj);
 }
 
+#ifdef SINGLE_PASS_INSTANCED
+float4 GetClipPos2(float3 worldPos)
+{
+	return mul(float4(worldPos, 1.0), cViewProj2);
+}
+#endif
+
 float GetZonePos(float3 worldPos)
 {
     return saturate(mul(float4(worldPos, 1.0), cZone).z);

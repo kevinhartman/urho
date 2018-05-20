@@ -12,17 +12,29 @@ namespace Urho.SharpReality
 		Matrix4 leftProj = Matrix4.Identity;
 		Matrix4 rightView = Matrix4.Identity;
 		Matrix4 rightProj = Matrix4.Identity;
+
 		float yaw;
 		float pitch;
 		float distanceBetweenEyes;
 
 		public bool Emulator { get; set; }
+
 		public Scene Scene { get; private set; }
+
 		public Octree Octree { get; private set; }
+
 		public Zone Zone { get; private set; }
+
 		public Camera LeftCamera { get; set; }
-		public Camera RightCamera { get; set; }
-		public Camera CullingCamera { get; set; }
+
+        public Camera RightCamera { get; set; }
+
+#if UWP_SINGLE_PASS_INSTANCED
+        public Node RightEyeNode { get; set; }
+#endif // UWP_SINGLE_PASS_INSTANCED
+
+        public Camera CullingCamera { get; set; }
+
 		public Light DirectionalLight { get; set; }
 		public virtual Vector3 FocusWorldPoint { get; set; }
 
@@ -33,7 +45,11 @@ namespace Urho.SharpReality
 				if (distanceBetweenEyes == 0 && !Emulator)
 				{
 					var l = LeftCamera.Node.WorldPosition;
-					var r = RightCamera.Node.WorldPosition;
+#if UWP_SINGLE_PASS_INSTANCED
+                    var r = RightEyeNode.WorldPosition;
+#else // UWP_SINGLE_PASS_INSTANCED
+                    var r = RightCamera.Node.WorldPosition;
+#endif // UWP_SINGLE_PASS_INSTANCED
 					distanceBetweenEyes = (float)Math.Sqrt((r.X-l.X)*(r.X-l.X)+(r.Y-l.Y)*(r.Y-l.Y)+(r.Z-l.Z)*(r.Z-l.Z));
 				}
 				return distanceBetweenEyes;
@@ -93,7 +109,13 @@ namespace Urho.SharpReality
 			ref Matrix4 leftView, ref Matrix4 leftProjection,
 			ref Matrix4 rightView, ref Matrix4 rightProjection);
 
-		protected override void Start()
+        [DllImport(Consts.NativeImport, CallingConvention = CallingConvention.Cdecl)]
+        static extern void Camera_SetHoloProjectionsSinglePass(
+            IntPtr leftEyeCamera, IntPtr rightEyeNode, IntPtr cullingCamera,
+            ref Matrix4 leftView, ref Matrix4 leftProjection,
+            ref Matrix4 rightView, ref Matrix4 rightProjection);
+
+        protected override void Start()
 		{
 			Renderer.SetDefaultRenderPath(DefaultRenderPath);
 			Renderer.DrawShadows = false;
@@ -114,11 +136,17 @@ namespace Urho.SharpReality
 			Renderer.TextureFilterMode = TextureFilterMode.Bilinear;
 
 			var leftCameraNode = Scene.CreateChild();
-			var rightCameraNode = Scene.CreateChild();
 			LeftCamera = leftCameraNode.CreateComponent<Camera>();
+#if UWP_SINGLE_PASS_INSTANCED
+            RightEyeNode = Scene.CreateChild();
+			Renderer.NumViewports = 1;
+#else // UWP_SINGLE_PASS_INSTANCED
+            var rightCameraNode = Scene.CreateChild();
 			RightCamera = rightCameraNode.CreateComponent<Camera>();
+            Renderer.NumViewports = 2; //two eyes
+#endif // UWP_SINGLE_PASS_INSTANCED
 
-			if (Emulator)
+            if (Emulator)
 			{
 				LeftCamera.Fov = 30;
 				LeftCamera.NearClip = 0.1f;
@@ -127,27 +155,41 @@ namespace Urho.SharpReality
 				return;
 			}
 
-			Renderer.NumViewports = 2; //two eyes
-
 #if UWP_HOLO
 			var leftViewport = new Viewport(Scene, LeftCamera, null);
+#if !UWP_SINGLE_PASS_INSTANCED
 			var rightVp = new Viewport(Scene, RightCamera, null);
+#endif // !UWP_SINGLE_PASS_INSTANCED
 			Renderer.SetViewport(0, leftViewport);
+#if !UWP_SINGLE_PASS_INSTANCED
 			Renderer.SetViewport(1, rightVp);
+#endif // !UWP_SINGLE_PASS_INSTANCED
 
 			var cullingCameraNode = Scene.CreateChild();
 			CullingCamera = cullingCameraNode.CreateComponent<Camera>();
+#if !UWP_SINGLE_PASS_INSTANCED
 			rightVp.CullCamera = CullingCamera;
+#endif // !UWP_SINGLE_PASS_INSTANCED
 			leftViewport.CullCamera = CullingCamera;
+#if !UWP_SINGLE_PASS_INSTANCED
 			rightVp.SetStereoMode(true);
+#endif // !UWP_SINGLE_PASS_INSTANCED
 
+#if UWP_SINGLE_PASS_INSTANCED
+			Time.SubscribeToFrameStarted(args =>
+				Camera_SetHoloProjectionsSinglePass(
+                    LeftCamera.Handle, RightEyeNode.Handle, CullingCamera.Handle,
+					ref leftView, ref leftProj,
+					ref rightView, ref rightProj));
+#else // UWP_SINGLE_PASS_INSTANCED
 			Time.SubscribeToFrameStarted(args =>
 				Camera_SetHoloProjections(
 					LeftCamera.Handle, RightCamera.Handle, CullingCamera.Handle,
 					ref leftView, ref leftProj,
 					ref rightView, ref rightProj));
+#endif // UWP_SINGLE_PASS_INSTANCED
 #else
-			var leftEyeRect = new IntRect(0, 0, Graphics.Width / 2, Graphics.Height);
+            var leftEyeRect = new IntRect(0, 0, Graphics.Width / 2, Graphics.Height);
 			var rightEyeRect = new IntRect(Graphics.Width / 2, 0, Graphics.Width, Graphics.Height);
 			
 			var leftViewport = new Viewport(Scene, LeftCamera, leftEyeRect, null);
